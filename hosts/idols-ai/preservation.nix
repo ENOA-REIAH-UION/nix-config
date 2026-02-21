@@ -257,6 +257,10 @@ in
         ".local/share/StardewValley"
         ".local/share/feral-interactive"
 
+        ".minecraftx"
+        ".config/xmcl"
+        ".local/share/PrismLauncher"
+
         # ======================================
         # Meeting / Remote Desktop / Recording
         # ======================================
