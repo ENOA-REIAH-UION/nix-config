@@ -78,6 +78,14 @@ window-rule {
     open-on-workspace "4gaming"
 }
 window-rule {
+    match app-id="prismlauncher"
+    open-on-workspace "4gaming"
+}
+window-rule {
+    match app-id="xmcl"
+    open-on-workspace "4gaming"
+}
+window-rule {
     // All *.exe (Windows applications)
     match app-id=".exe$"
     open-on-workspace "4gaming"
