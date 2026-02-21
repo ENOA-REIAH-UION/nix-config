@@ -28,13 +28,13 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./hardware-intel.nix
-    ./hardware-nvidia.nix
+    #./hardware-nvidia.nix
 
     ./preservation.nix
-    ./secureboot.nix
+    #./secureboot.nix
 
     # others
-    ./ai
+    #./ai
   ];
 
   # Zram consumes physical memory for compression, which can cause a deadlock and system hang if the model size approaches the physical memory limit.
@@ -47,7 +47,7 @@ in
     inherit hostName;
 
     # we use networkd instead
-    networkmanager.enable = false; # provides nmcli/nmtui for wifi adjustment
+    networkmanager.enable = true; # provides nmcli/nmtui for wifi adjustment
     useDHCP = false;
   };
 
