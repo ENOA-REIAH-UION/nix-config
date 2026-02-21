@@ -36,11 +36,12 @@ let
           #   just trace-access qq
           # See the Justfile in the root of this repository for more information.
           bind.rw = [
-            sloth.xdgDocumentsDir
-            sloth.xdgDownloadDir
-            sloth.xdgMusicDir
-            sloth.xdgVideosDir
-            sloth.xdgPicturesDir
+            sloth.homeDir
+            # sloth.xdgDocumentsDir
+            # sloth.xdgDownloadDir
+            # sloth.xdgMusicDir
+            # sloth.xdgVideosDir
+            # sloth.xdgPicturesDir
           ];
           sockets = {
             x11 = false;
