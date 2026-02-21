@@ -1,12 +1,24 @@
-# 为了不使用默认的 rime-data，改用我自定义的小鹤音形数据，这里需要 override
-# 参考 https://github.com/NixOS/nixpkgs/blob/e4246ae1e7f78b7087dce9c9da10d28d3725025f/pkgs/tools/inputmethods/fcitx5/fcitx5-rime.nix
-_:
-(_: super: {
-  # 小鹤音形配置，配置来自 flypy.com 官方网盘的鼠须管配置压缩包「小鹤音形“鼠须管”for macOS.zip」
-  # 我仅修改了 default.yaml 文件，将其中的半角括号改为了直角括号「 与 」。
-  rime-data = ./rime-data-flypy;
-  fcitx5-rime = super.fcitx5-rime.override { rimeDataPkgs = [ ./rime-data-flypy ]; };
+# 覆盖 nixpkgs 默认的 Rime 数据，使用自定义方案数据。
+# 参考： https://github.com/NixOS/nixpkgs/blob/e4246ae1e7f78b7087dce9c9da10d28d3725025f/pkgs/tools/inputmethods/fcitx5/fcitx5-rime.nix
+_: (final: prev: {
+  fcitx5-rime = prev.fcitx5-rime.override {
+    rimeDataPkgs = [
+      # nixpkgs 默认的 `rime-data` 包含 `rime-prelude` 等基础配置，
+      # 部分 Rime 方案可能依赖其中的文件（例如 `symbols.yaml`）。
+      #
+      # 在 nixpkgs commit 4b2b576b0efd28e9f8535119760cbd8dc9bac5bd 之前，
+      # 缺少 `default.yaml` 甚至可能导致 fcitx5-rime 无法正常工作。
+      #
+      # 若自定义方案依赖这些基础配置，可以同时引入 `prev.rime-data` 和自定义数据，
+      # 或是在自定义数据中补全所依赖的基础配置。
+      #
+      # prev.rime-data
 
-  # used by macOS Squirrel
-  flypy-squirrel = ./rime-data-flypy;
+      final.rime-data-custom
+    ];
+  };
+
+  # 导出自定义 Rime 数据，供不同平台和 Rime 前端复用。
+  # 例如 fcitx5-rime 和 macOS Squirrel。
+  rime-data-custom = ./rime-data-custom;
 })
