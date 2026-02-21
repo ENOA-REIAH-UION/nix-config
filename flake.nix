@@ -178,6 +178,12 @@
       flake = false;
     };
 
+    # custom Rime input method data, consumed by the fcitx5 overlay below.
+    rime-data = {
+      url = "github:ENOA-REIAH-UION/my-rime-data";
+      flake = false;
+    };
+
     nur-ryan4yin = {
       url = "github:ryan4yin/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs";

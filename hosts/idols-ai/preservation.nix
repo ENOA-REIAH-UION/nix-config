@@ -312,6 +312,8 @@ in
         # Japanese IME
         ".config/mozc" # used by fcitx5-mozc
 
+        ".local/share/fcitx5"
+
         ".config/nushell"
       ];
       files = [

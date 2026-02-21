@@ -11,25 +11,13 @@ through [Overlays - NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world
 overlays/
 ├── README.md
 ├── default.nix          # Entrypoint for all overlays
-└── fcitx5/              # Chinese input method configuration
-    ├── README.md
-    ├── default.nix      # fcitx5 overlay definition
-    └── rime-data-flypy/ # Custom rime data for 小鹤音形输入法
-        └── share/
-            └── rime-data/
-                ├── build/
-                ├── default.custom.yaml
-                ├── default.yaml
-                ├── flypy.schema.yaml
-                ├── flypy_full全码字.txt
-                ├── flypy_sys.txt
-                ├── flypy_top.txt
-                ├── flypy_user.txt
-                ├── lua/
-                │   └── calculator_translator.lua
-                ├── rime.lua
-                ├── squirrel.custom.yaml
-                └── squirrel.yaml
+├── fcitx5/              # Chinese input method (rime data lives in a separate repo)
+│   ├── README.md
+│   ├── default.nix      # fcitx5 overlay definition
+├   └── rime-data-custom/ # Custom rime data
+├       └── share/
+├           └── rime-data/
+└── openldap.nix
 ```
 
 ## Components
@@ -41,10 +29,16 @@ the given args.
 
 ### 2. `fcitx5`
 
-fcitx5's overlay, add my customized Chinese input method - [小鹤音形输入法](https://flypy.com/)
+fcitx5's overlay, wires up my customized Chinese input method data for the `fcitx5-rime` package.
 
-This overlay provides:
+The Rime data itself (dictionaries, schemas, Lua scripts) lives in its own repository,
+[ENOA-REIAH-UION/rime-data](https://github.com/ENOA-REIAH-UION/rime-data), and is consumed here as
+the `rime-data` flake input. This overlay provides:
 
-- Custom rime data for 小鹤音形输入法 (Flypy input method)
-- Cross-platform support for both Linux (fcitx5-rime) and macOS (squirrel)
-- Pre-configured input method settings
+- `rimeDataPkgs` for `fcitx5-rime` — the nixpkgs default `rime-data` plus the external `rime-data`
+  input.
+- `rime-data-custom` — an alias of the external input, for reuse by other Rime frontends.
+
+> [!NOTE] The data can also be configured locally — a directory in this repo passed straight to
+> `rimeDataPkgs` (what the old `overlays/fcitx5/rime-data-custom/` did). It was split into a
+> separate repository because the scheme is very large and needs frequent, flexible changes.
