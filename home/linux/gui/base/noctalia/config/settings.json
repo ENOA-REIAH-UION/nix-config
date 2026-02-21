@@ -487,10 +487,10 @@
     "wifiDetailsViewMode": "grid"
   },
   "nightLight": {
-    "autoSchedule": true,
+    "autoSchedule": false,
     "dayTemp": "6500",
     "enabled": true,
-    "forced": true,
+    "forced": false,
     "manualSunrise": "06:30",
     "manualSunset": "18:30",
     "nightTemp": "4000"
@@ -647,7 +647,7 @@
   },
   "wallpaper": {
     "automationEnabled": true,
-    "directory": "/home/ryan/Pictures/Wallpapers",
+    "directory": "/home/enoa/Pictures/Wallpapers",
     "enableMultiMonitorDirectories": false,
     "enabled": true,
     "favorites": [],
