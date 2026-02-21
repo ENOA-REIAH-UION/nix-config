@@ -7,26 +7,12 @@
     disko.url = "github:nix-community/disko/v1.11.0";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nuenv.url = "github:DeterminateSystems/nuenv";
-
-    nixos-apple-silicon = {
-      # 2025-10-07 asahi-6.16.8-1
-      url = "github:nix-community/nixos-apple-silicon/24ab28e47b586f741910b3a2f0428f3523a0fff3";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    my-asahi-firmware = {
-      url = "git+ssh://git@github.com/ryan4yin/asahi-firmware.git?shallow=1";
-      flake = false;
-    };
   };
 
   outputs =
     inputs@{
       nixpkgs,
       disko,
-      nixos-apple-silicon,
-      my-asahi-firmware,
-      ...
     }:
     let
       inherit (inputs.nixpkgs) lib;
@@ -54,27 +40,6 @@
             disko.nixosModules.default
             ../hosts/idols-ai/disko-fs.nix
             ../hosts/idols-ai/hardware-configuration.nix
-            ../hosts/idols-ai/preservation.nix
-          ];
-        };
-
-        shoukei = nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
-          specialArgs = inputs // {
-            inherit mylib myvars my-asahi-firmware;
-          };
-          modules = [
-            { networking.hostName = "shoukei"; }
-
-            nixos-apple-silicon.nixosModules.default
-            ./configuration.nix
-
-            ../modules/base
-            ../modules/nixos/base/i18n.nix
-            ../modules/nixos/base/user-group.nix
-            ../modules/nixos/base/ssh.nix
-
-            ../hosts/12kingdoms-shoukei/hardware-configuration.nix
             ../hosts/idols-ai/preservation.nix
           ];
         };

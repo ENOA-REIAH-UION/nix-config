@@ -1,15 +1,15 @@
 { lib }:
 {
-  username = "ryan";
-  userfullname = "Ryan Yin";
-  useremail = "xiaoyin_c@qq.com";
+  username = "enoa";
+  userfullname = "ENOA-ANSUL-EDEN";
+  useremail = "i@enoa.me";
   networking = import ./networking.nix { inherit lib; };
   # Generated using: mkpasswd -m yescrypt --rounds=11
   # Password: long, strong random string (full charset)
   # Rotation policy: changed annually
   # Purpose: system login password only
   # https://man.archlinux.org/man/crypt.5.en
-  initialHashedPassword = "$y$jFT$RBapCH3F6bc0uSF.FaUGB.$rvhiVvcCKxkkumDFLONV5zFP1lsv1VyZ1ErH.r2rNk3";
+  initialHashedPassword = "$7$GU..../....lDLNQZuz99AAblgT6TM/P/$zknk3lSl1oc8d63ZFL3jJvL2icBvoAjjwj6WVXLt1E6";
   # Public Keys that can be used to login to all my PCs, Macbooks, and servers.
   #
   # Since its authority is so large, we must strengthen its security:
@@ -24,9 +24,10 @@
   # 2. Or just use hardware security keys like Yubikey/CanoKey.
   mainSshAuthorizedKeys = [
     # The main ssh keys for daily usage
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIKlN+Q/GxvwxDX/OAjJHaNFEznEN4Tw4E4TwqQu/eD6 ryan@idols-ai"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwoI5MAogEa726jwwHL5EgM1X/i2A5d2pgV7i7t8fzB ryan@shoukei"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDc1PNTXzzvd93E+e9LXvnEzqgUI5gMTEF/IitvzgmL+ ryan@frieren"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/RtJQpyF01Em9egPbkvsossaR+yhjIa7pZhmlEEB32 enoa@ar"
+    # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIKlN+Q/GxvwxDX/OAjJHaNFEznEN4Tw4E4TwqQu/eD6 ryan@idols-ai"
+    # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwoI5MAogEa726jwwHL5EgM1X/i2A5d2pgV7i7t8fzB ryan@shoukei"
+    # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDc1PNTXzzvd93E+e9LXvnEzqgUI5gMTEF/IitvzgmL+ ryan@frieren"
   ];
   secondaryAuthorizedKeys = [
     # the backup ssh keys for disaster recovery

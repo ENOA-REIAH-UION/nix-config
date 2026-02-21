@@ -21,7 +21,7 @@
     publicKeys = [
       # https://www.gnupg.org/gph/en/manual/x334.html
       {
-        source = "${mysecrets}/public/ryan4yin-gpg-keys-2014-01-27.pub";
+        source = "${mysecrets}/public/enoa-gpg-keys.pub";
         trust = 5;
       } # ultimate trust, my own keys.
     ];
