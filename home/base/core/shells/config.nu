@@ -173,3 +173,5 @@ path add "~/.local/bin"
 # You can remove duplicate directories from the path using:
 $env.PATH = ($env.PATH | uniq)
 
+mkdir ($nu.data-dir | path join "vendor/autoload")
+starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")
