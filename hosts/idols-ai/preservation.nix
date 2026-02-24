@@ -137,6 +137,13 @@ in
         ".vscode"
         ".config/Code"
 
+        # android-studio
+        "Android"
+        ".android"
+        ".local/share/Google"
+        ".config/Google"
+        "StudioProjects"
+
         # cursor ai editor / cli
         ".cursor"
         ".config/cursor"
