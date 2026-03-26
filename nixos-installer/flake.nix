@@ -13,6 +13,7 @@
     inputs@{
       nixpkgs,
       disko,
+      ...
     }:
     let
       inherit (inputs.nixpkgs) lib;
