@@ -1,7 +1,7 @@
 { lib }:
 {
   username = "enoa";
-  userfullname = "ENOA-ANSUL-EDEN";
+  userfullname = "ENOA-REIAH-UION";
   useremail = "i@enoa.me";
   networking = import ./networking.nix { inherit lib; };
   # Generated using: mkpasswd -m yescrypt --rounds=11
