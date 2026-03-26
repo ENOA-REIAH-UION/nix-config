@@ -52,8 +52,8 @@
 
       # replace https with ssh
       url = {
-        "ssh://git@github.com/ENOA-ANSUL-EDEN" = {
-          insteadOf = "https://github.com/ENOA-ANSUL-EDEN";
+        "ssh://git@github.com/ENOA-REIAH-UION" = {
+          insteadOf = "https://github.com/ENOA-REIAH-UION";
         };
         # "ssh://git@bitbucket.com/ryan4yin" = {
         #   insteadOf = "https://bitbucket.com/ryan4yin";
