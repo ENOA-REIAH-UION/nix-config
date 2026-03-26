@@ -22,7 +22,7 @@ in
     disko.nixosModules.default
     # disks
     ./disko-fs.nix
-    ./disko-fs-data.nix
+    # ./disko-fs-data.nix
     ./netdev-mount.nix
 
     # Include the results of the hardware scan.
