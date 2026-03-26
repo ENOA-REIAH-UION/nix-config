@@ -25,7 +25,7 @@
 
     disk.nixos-ai = {
       type = "disk";
-      device = "/dev/disk/by-id/nvme-KINGBANK_KP260_CN092BH3203917";
+      device = "/dev/disk/by-id/nvme-KIOXIA-EXCERIA_PLUS_G3_SSD_7FTKS0ASZ0E7";
       content = {
         type = "gpt";
         partitions = {
