@@ -2,7 +2,17 @@
 default:
     @just --list
 
-# Enter a shell session which has all the necessary tools for this flake
+# Check that the installer flake evaluates and the NixOS system can be built
 [linux]
-test:
-  nix build ".#nixosConfigurations.ai.config.system.build.toplevel" --show-trace --verbose
+check:
+  nix flake check --show-trace --print-build-logs
+
+# Build the installer system without installing it
+[linux]
+build:
+  nix build .#nixosConfigurations.ai.config.system.build.toplevel --show-trace --print-build-logs
+
+# Install the ai host onto /mnt after preparing disks with disko
+[linux]
+install:
+  nixos-install --root /mnt --flake .#ai --no-root-password

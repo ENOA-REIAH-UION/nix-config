@@ -2,8 +2,8 @@
 # secrets, unfamiliar payloads), prefer `nvim --clean` — wired via `SUDO_EDITOR`.
 {
   home.sessionVariables = {
-    EDITOR = "hx";
-    VISUAL = "hx";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
     SUDO_EDITOR = "nvim --clean";
   };
 }

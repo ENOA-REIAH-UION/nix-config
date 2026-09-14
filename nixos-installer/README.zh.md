@@ -17,6 +17,9 @@
 
 磁盘布局通过 [disko](https://github.com/nix-community/disko) 实现**声明式**配置，无需手动分区。
 
+本 installer flake 固定使用 disko `v1.13.0`。安装前可以在 `nixos-installer/` 目录执行
+`just check` 验证配置，执行 `just build` 构建安装系统。
+
 ## 部署步骤
 
 ### 准备工作
@@ -39,10 +42,10 @@ sudo su
 
 # 使用 luks2 + argon2id 加密根分区，会提示输入密码用于解锁分区
 # 警告：会清除 nvme1n1 上的所有数据！布局默认挂载到 /mnt
-nix run github:nix-community/disko -- --mode destroy,format,mount ../hosts/idols-ai/disko-fs.nix
+nix run .#disko -- --mode destroy,format,mount ../hosts/idols-ai/disko-fs.nix
 
 # 仅挂载（例如首次格式化后，无需清除数据）：
-# nix run github:nix-community/disko -- --mode mount ../hosts/idols-ai/disko-fs.nix
+# nix run .#disko -- --mode mount ../hosts/idols-ai/disko-fs.nix
 
 # 设置通过 TPM2 芯片自动解锁
 systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/<加密磁盘分区路径>
@@ -58,7 +61,7 @@ $(ssh-agent)
 ssh-add /path/to/ssh-key
 
 # 从 nix-config/nixos-installer 目录执行
-nixos-install --root /mnt --flake .#ai --no-root-password
+just install
 ```
 
 ### 3. 复制数据到 /persistent 并重启
@@ -104,10 +107,9 @@ ssh-add ~/.ssh/idols_ai
 ### 3. 部署主配置
 
 ```bash
-sudo mv /etc/nixos ~/nix-config
-sudo chown -R ryan:ryan ~/nix-config
+git clone https://github.com/ENOA-REIAH-UION/nix-config.git ~/nix-config
 cd ~/nix-config
-just hypr
+sudo nixos-rebuild switch --flake .#ai-niri --show-trace
 ```
 
 ### 4. 配置 Secure Boot
@@ -124,11 +126,8 @@ just hypr
 # 进入 nix-config 目录
 cd ~/nix-config
 
-# 升级 NixOS 配置（等同于 nixos-rebuild switch --flake .#ai）
-just hypr
-
-# 或者手动执行
-sudo nixos-rebuild switch --flake .#ai
+# 升级 NixOS 配置
+sudo nixos-rebuild switch --flake .#ai-niri --show-trace
 ```
 
 如果你只是修改了 flake 输入（如更新 nixpkgs 版本），需要先更新锁文件：
@@ -147,10 +146,10 @@ sudo nixos-rebuild switch --flake .#ai
 
 ```bash
 # 重新格式化（会清除数据！）
-nix run github:nix-community/disko -- --mode destroy,format,mount ../hosts/idols-ai/disko-fs.nix
+nix run .#disko -- --mode destroy,format,mount ../hosts/idols-ai/disko-fs.nix
 
 # 或者仅挂载（不重新格式化）
-nix run github:nix-community/disko -- --mode mount ../hosts/idols-ai/disko-fs.nix
+nix run .#disko -- --mode mount ../hosts/idols-ai/disko-fs.nix
 ```
 
 ## 修改 LUKS2 密码

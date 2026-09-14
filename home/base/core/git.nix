@@ -44,11 +44,18 @@
       user.email = myvars.useremail;
       user.name = myvars.userfullname;
 
+      core.editor = "nvim -f";
+      core.pager = "nvim -R";
+
+      pager.log = true;
+      # pager.diff = true;
+      color.pager = false;
+
       init.defaultBranch = "main";
       trim.bases = "develop,master,main"; # for git-trim
       push.autoSetupRemote = true;
       pull.rebase = true;
-      log.date = "iso"; # use iso format for date
+      log.date = "format:%Y-%m-%d %H:%M:%S";
 
       # replace https with ssh
       url = {
@@ -90,18 +97,18 @@
     };
   };
 
-  # A syntax-highlighting pager for git, diff, grep, and blame output
-  programs.delta = {
-    enable = true;
-    enableGitIntegration = true;
-    options = {
-      diff-so-fancy = true;
-      line-numbers = true;
-      true-color = "always";
-      # features => named groups of settings, used to keep related settings organized
-      # features = "";
-    };
-  };
+  # # A syntax-highlighting pager for git, diff, grep, and blame output
+  # programs.delta = {
+  #   enable = true;
+  #   enableGitIntegration = true;
+  #   options = {
+  #     diff-so-fancy = true;
+  #     line-numbers = true;
+  #     true-color = "always";
+  #     # features => named groups of settings, used to keep related settings organized
+  #     # features = "";
+  #   };
+  # };
 
   # Git terminal UI (written in go).
   programs.lazygit.enable = true;

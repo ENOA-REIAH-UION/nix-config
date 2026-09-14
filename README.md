@@ -24,8 +24,7 @@
 This repository is home to the nix code that builds my systems:
 
 1. NixOS Desktops: NixOS with home-manager, niri, agenix, etc.
-2. macOS Desktops: nix-darwin with home-manager, share the same home-manager configuration with
-   NixOS Desktops.
+2. Android: Nix-on-Droid with a deliberately small TUI-oriented configuration.
 3. NixOS Servers: virtual machines running on Proxmox/KubeVirt, with various services, such as
    kubernetes, homepage, prometheus, grafana, etc.
 
@@ -48,9 +47,8 @@ As for Flakes, refer to
 You don't have to go through the pain I've experienced again! Check out my
 [NixOS & Nix Flakes Book - 🛠️ ❤️ An unofficial & opinionated :book: for beginners](https://github.com/ryan4yin/nixos-and-flakes-book)!**
 
-> If you're using macOS, check out
-> [ryan4yin/nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter) for a quick
-> start.
+> If you're using Android with Nix-on-Droid, keep the `nix-on-droid` host intentionally lightweight.
+
 
 ## Components
 
@@ -125,20 +123,37 @@ just niri
 just niri debug
 ```
 
-For macOS:
+For Android / Nix-on-Droid:
+
+Install the Nix-on-Droid app and choose the flake setup during first launch. Nix-on-Droid is not
+a full NixOS installation; it provides a Nix-managed terminal environment on Android. The first
+switch can be done from a temporary `git` shell; after applying this configuration, `git`, `just`,
+Helix and Nushell are managed declaratively.
 
 ```bash
-# If you are deploying for the first time,
-# 1. install nix & homebrew manually.
-# 2. prepare the deployment environment with essential packages available
-nix-shell -p just nushell
-# 3. comment home-manager's code in lib/macosSystem.nix to speed up the first deployment.
-# 4. comment out the proxy settings in scripts/darwin_set_proxy.py if the proxy is not ready yet.
+nix shell nixpkgs#git
+git clone https://github.com/ENOA-REIAH-UION/nix-config.git ~/nix-config
+cd ~/nix-config
+nix-on-droid switch --flake .#nix-on-droid --show-trace
 
-# Deploy the darwinConfiguration by hostname match
+# afterwards, the repository helper is available
+just droid-switch
+```
+
+The Android configuration intentionally stays TUI-only: Nushell, Helix, Git, OpenSSH and a small
+set of command-line utilities. Use `just android` to see the available Android commands.
+
+For desktop Linux:
+
+```bash
+# If you are deploying for the first time, prepare the deployment environment
+# with the essential packages available.
+nix-shell -p just nushell
+
+# Deploy the local NixOS configuration
 just local
 
-# deploy with details
+# Deploy with details
 just local debug
 ```
 

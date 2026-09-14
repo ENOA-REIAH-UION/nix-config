@@ -1,5 +1,5 @@
 {
-  description = "Ryan Yin's nix configuration for both NixOS & macOS";
+  description = "Ryan Yin's NixOS and Nix-on-Droid configuration";
 
   ##################################################################################################################
   #
@@ -8,7 +8,236 @@
   #
   ##################################################################################################################
 
-  outputs = inputs: import ./outputs inputs;
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixpkgs-2505,
+      nixpkgs-stable,
+      nixpkgs-patched,
+      nixpkgs-master,
+      home-manager,
+      nixos-generators,
+      nix-on-droid,
+      pre-commit-hooks,
+      ...
+    }:
+    let
+      inherit (nixpkgs) lib;
+
+      mylib = import ./lib { inherit lib; };
+      myvars = import ./vars { inherit lib; };
+
+      genSpecialArgs =
+        system:
+        inputs
+        // {
+          inherit mylib myvars;
+
+          pkgs-2505 = import nixpkgs-2505 {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          pkgs-stable = import nixpkgs-stable {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          pkgs-patched = import nixpkgs-patched {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          pkgs-master = import nixpkgs-master {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          pkgs-x64 = import nixpkgs {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+            overlays = import ./overlays inputs;
+          };
+        };
+
+      x86BaseArgs = {
+        inherit
+          inputs
+          lib
+          mylib
+          myvars
+          genSpecialArgs
+          ;
+        system = "x86_64-linux";
+      };
+
+      k8sHosts = {
+        "k3s-prod-1-master-1" = {
+          home = [ ./home/hosts/linux/k3s-prod-1-master-1.nix ];
+        };
+        "k3s-prod-1-master-2" = { };
+        "k3s-prod-1-master-3" = { };
+        "k3s-prod-1-worker-1" = { };
+        "k3s-prod-1-worker-2" = { };
+        "k3s-prod-1-worker-3" = { };
+        "k3s-test-1-master-1" = {
+          home = [ ./home/hosts/linux/k3s-test-1-master-1.nix ];
+        };
+        "k3s-test-1-master-2" = { };
+        "k3s-test-1-master-3" = { };
+        "kubevirt-shoryu" = {
+          tags = [ "virt-shoryu" ];
+          iso = true;
+        };
+        "kubevirt-shushou" = {
+          tags = [ "virt-shushou" ];
+          iso = true;
+          preservation = true;
+        };
+        "kubevirt-youko" = {
+          tags = [ "virt-youko" ];
+          iso = true;
+          preservation = true;
+        };
+      };
+
+      mkK8s = name: host:
+        let
+          tags = [ name ] ++ (host.tags or [ ]);
+          commonModules = [
+            ./secrets/nixos.nix
+            ./modules/nixos/server/server.nix
+          ];
+          hardwareModule =
+            lib.optional (!lib.hasPrefix "kubevirt-" name)
+              ./modules/nixos/server/kubevirt-hardware-configuration.nix;
+          hostModule = ./hosts/k8s/${name};
+          extraModules = [
+            { modules.secrets.server.kubernetes.enable = true; }
+          ] ++ lib.optional (host.preservation or false) {
+            modules.secrets.preservation.enable = true;
+          };
+          modules = commonModules ++ hardwareModule ++ [ hostModule ] ++ extraModules;
+          args = x86BaseArgs // {
+            inherit modules;
+            nixos-modules = modules;
+            home-modules = host.home or [ ];
+          };
+          config = mylib.nixosSystem args;
+        in
+        {
+          inherit config tags;
+          iso = host.iso or false;
+          colmena = mylib.colmenaSystem (args // { inherit tags; ssh-user = "root"; }) { name = name; };
+        };
+
+      k8s = lib.mapAttrs mkK8s k8sHosts;
+
+      idolsAi =
+        let
+          modules = [
+            ./secrets/nixos.nix
+            ./modules/nixos/desktop.nix
+            ./hosts/idols-ai
+            ./hardening/nixpaks
+            ./hardening/bwraps
+            {
+              programs.niri.enable = true;
+              modules.desktop.fonts.enable = true;
+              modules.desktop.wayland.enable = true;
+              modules.secrets.desktop.enable = true;
+              modules.secrets.preservation.enable = true;
+              modules.desktop.gaming.enable = true;
+            }
+          ];
+          args = x86BaseArgs // {
+            nixos-modules = modules;
+            home-modules = [ ./home/hosts/linux/idols-ai.nix ];
+          };
+        in
+        mylib.nixosSystem args;
+
+      nixosConfigurations =
+        (lib.mapAttrs (name: host: host.config) k8s)
+        // { "ai-niri" = idolsAi; };
+
+      colmena =
+        {
+          meta = {
+            nixpkgs = import nixpkgs { system = "x86_64-linux"; };
+            specialArgs = genSpecialArgs "x86_64-linux";
+          };
+        }
+        // lib.mapAttrs (name: host: host.colmena) k8s;
+
+      packages.x86_64-linux =
+        (lib.mapAttrs (name: host:
+          if host.iso then host.config.config.formats.iso
+          else host.config.config.formats.kubevirt
+        ) k8s)
+        // {
+          "ai-niri" = idolsAi.config.formats.iso;
+        };
+
+      # Nix-on-Droid is intentionally kept small for now: TUI only.
+      nixOnDroidConfigurations."nix-on-droid" =
+        nix-on-droid.lib.nixOnDroidConfiguration {
+          pkgs = import nixpkgs {
+            system = "aarch64-linux";
+            config.allowUnfree = true;
+          };
+          extraSpecialArgs = {
+            inherit inputs mylib myvars;
+            pkgs-master = import nixpkgs-master {
+              system = "aarch64-linux";
+              config.allowUnfree = true;
+            };
+           };
+          modules = [ ./hosts/nix-on-droid ];
+        };
+
+      checks.x86_64-linux.pre-commit-check = pre-commit-hooks.lib.x86_64-linux.run {
+        src = ./.;
+        hooks = {
+          nixfmt-rfc-style = {
+            enable = true;
+            settings.width = 100;
+          };
+          typos = {
+            enable = true;
+            settings = {
+              write = true;
+              configPath = ".typos.toml";
+              exclude = "rime-data/";
+            };
+          };
+          prettier = {
+            enable = true;
+            settings = {
+              write = true;
+              configPath = ".prettierrc.yaml";
+            };
+          };
+        };
+      };
+
+      devShells.x86_64-linux.default =
+        nixpkgs.legacyPackages.x86_64-linux.mkShell {
+          packages = with nixpkgs.legacyPackages.x86_64-linux; [
+            bashInteractive
+            gcc
+            nixfmt
+            deadnix
+            statix
+            typos
+            prettier
+          ];
+          name = "dots";
+          shellHook = self.checks.x86_64-linux.pre-commit-check.shellHook;
+        };
+
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
+    in
+    {
+      inherit nixosConfigurations colmena packages checks devShells formatter nixOnDroidConfigurations;
+    };
 
   # the nixConfig here only affects the flake itself, not the system configuration!
   # for more information, see:
@@ -48,14 +277,6 @@
     # get some latest packages from the master branch
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
-    # for macos
-    # nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
-    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nix-darwin = {
-      url = "github:lnl7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-    };
-
     # home-manager, used for managing user configuration
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -86,6 +307,11 @@
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-on-droid = {
+      url = "github:nix-community/nix-on-droid/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
     # secrets management
     agenix = {
@@ -124,12 +350,6 @@
 
     blender-bin = {
       url = "github:edolstra/nix-warez?dir=blender";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nixos-apple-silicon = {
-      # asahi-6.18.9
-      url = "github:nix-community/nixos-apple-silicon";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
