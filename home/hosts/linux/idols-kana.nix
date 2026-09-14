@@ -1,3 +1,0 @@
-{
-  imports = [ ./idols-aquamarine.nix ];
-}

@@ -6,10 +6,6 @@
 This flake prepares a Nix environment for setting up the desktop host
 [hosts/idols-ai](../hosts/idols-ai/) (from the main flake) on a new machine.
 
-Other docs:
-
-- [README for 12kingdoms-shoukei](./README.shoukei.md)
-
 ## Why this flake exists
 
 The main flake is heavy and slow to deploy. This minimal flake helps to:
@@ -21,6 +17,10 @@ Disk layout is **declarative** via [disko](https://github.com/nix-community/disk
 partitioning is no longer needed.
 
 ## Steps to deploy
+
+The installer flake is kept aligned with the current main configuration and uses
+[disko](https://github.com/nix-community/disko) `v1.13.0`. Before installing, verify the
+installer flake with `just check` and build it with `just build`.
 
 1. Create a USB install medium from the official NixOS ISO and boot from it.
 
@@ -38,10 +38,10 @@ sudo su
 
 # encrypt the root partition with luks2 and argon2id, will prompt for a passphrase, which will be used to unlock the partition.
 # WARNING: destroys all data on nvme1n1. Layout is mounted at /mnt by default.
-nix run github:nix-community/disko -- --mode destroy,format,mount ../hosts/idols-ai/disko-fs.nix
+nix run .#disko -- --mode destroy,format,mount ../hosts/idols-ai/disko-fs.nix
 
 # Mount only (e.g. after first format, without wiping):
-# nix run github:nix-community/disko -- --mode mount ../hosts/idols-ai/disko-fs.nix
+# nix run .#disko -- --mode mount ../hosts/idols-ai/disko-fs.nix
 
 # setup the automatic unlock via the tpm2 chip
 systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/<encrypted-disk-part-path>
@@ -57,7 +57,7 @@ $(ssh-agent)
 ssh-add /path/to/ssh-key
 
 # From nix-config/nixos-installer
-nixos-install --root /mnt --flake .#ai --no-root-password
+just install
 ```
 
 ### 3. Copy data into /persistent and reboot
@@ -85,7 +85,7 @@ nvme0n1) can be reused for something else.
 ### Optional: use a cache mirror
 
 ```bash
-nixos-install --root /mnt --flake .#ai --no-root-password \
+just install \
   --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/"
 ```
 
@@ -106,10 +106,9 @@ After the first boot:
 3. Deploy the main config:
 
    ```bash
-   sudo mv /etc/nixos ~/nix-config
-   sudo chown -R ryan:ryan ~/nix-config
+   git clone https://github.com/ENOA-REIAH-UION/nix-config.git ~/nix-config
    cd ~/nix-config
-   just hypr
+   sudo nixos-rebuild switch --flake .#ai-niri --show-trace
    ```
 
 4. **Secure Boot**: follow

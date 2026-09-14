@@ -8,7 +8,7 @@ Keep changes minimal, verifiable, and safe for multi-host deployments.
 This repository manages:
 
 - NixOS hosts (desktop + servers)
-- macOS hosts via nix-darwin
+- Android hosts via Nix-on-Droid
 - Home Manager profiles shared across platforms
 - Remote deployments via colmena
 
@@ -16,14 +16,9 @@ High-level layout:
 
 ```text
 .
-├── flake.nix                    # Flake entry; outputs composed in ./outputs
+├── flake.nix                    # Flake entry; outputs defined directly
 ├── Justfile                     # Primary command entrypoint (uses nushell)
-├── outputs/
-│   ├── default.nix
-│   ├── x86_64-linux/
-│   ├── aarch64-linux/
-│   └── aarch64-darwin/
-├── modules/                     # NixOS + darwin modules
+├── modules/                     # NixOS modules
 ├── home/                        # Home Manager modules
 ├── hosts/                       # Host-specific config
 ├── vars/                        # Shared variables
@@ -113,9 +108,6 @@ nixos-rebuild switch --flake .#<hostname>
 
 Eval tests live under:
 
-- `outputs/x86_64-linux/tests/`
-- `outputs/aarch64-linux/tests/`
-- `outputs/aarch64-darwin/tests/`
 
 Typical test pair:
 
@@ -165,7 +157,6 @@ Module pattern:
 - Some tasks exist only on Linux or macOS via `[linux]` / `[macos]` guards.
 - `just local` has different implementations per platform:
   - Linux: `nixos-switch`
-  - macOS: `darwin-build` + `darwin-switch`
 
 ## Secrets and Safety
 
@@ -188,7 +179,7 @@ Before finishing, verify:
 
 - Editing host-specific files when the change belongs in shared module layers (`modules/` or
   `home/`).
-- Forgetting to update both Linux and darwin paths when touching shared abstractions.
+- Forgetting to update host-specific paths when touching shared abstractions.
 - Running deployment commands to validate syntax when `nix eval`/`nix build` would be safer.
 - Introducing hardcoded usernames/paths instead of using `myvars` and existing abstractions.
 
@@ -197,7 +188,6 @@ Before finishing, verify:
 - [README.md](./README.md)
 - [agents/README.md](./agents/README.md)
 - [Justfile](./Justfile)
-- [outputs/README.md](./outputs/README.md)
 - [hosts/README.md](./hosts/README.md)
 - [home/README.md](./home/README.md)
 - [modules/README.md](./modules/README.md)

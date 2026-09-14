@@ -26,6 +26,8 @@
         jsonnet-language-server
         taplo # TOML language server / formatter / validator
         yaml-language-server
+        yamlfmt
+        
         actionlint # GitHub Actions linter
 
         #-- dockerfile
@@ -111,12 +113,22 @@
           spring-boot-cli
           jdt-language-server
 
+          kotlin-language-server
+          # kotlin-lsp
+          ktlint
+
           #-- zig
           zls
 
           #-- lua
           stylua
           lua-language-server
+
+          #-- haskell
+          ghc
+          cabal-install
+          haskell-language-server
+          haskellPackages.fourmolu
 
           #-- bash
           bash-language-server
@@ -129,11 +141,11 @@
         pnpm
         typescript
         typescript-language-server
-        bun
+        # bun
         # HTML/CSS/JSON/ESLint language servers extracted from vscode
-        vscode-langservers-extracted
-        tailwindcss-language-server
-        emmet-ls
+        # vscode-langservers-extracted
+        # tailwindcss-language-server
+        # emmet-ls
       ]
       # -*- Lisp like Languages -*-#
       # ++ [

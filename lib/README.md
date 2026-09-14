@@ -9,7 +9,6 @@ easier to add new machines.
 
 1. **`attrs.nix`** - Attribute set manipulation utilities
 2. **`macosSystem.nix`** - macOS configuration generator for
-   [nix-darwin](https://github.com/LnL7/nix-darwin)
 3. **`nixosSystem.nix`** - NixOS configuration generator
 4. **`colmenaSystem.nix`** - Remote deployment configuration for
    [colmena](https://github.com/zhaofengli/colmena)

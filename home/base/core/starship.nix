@@ -23,7 +23,12 @@
         symbol = "⛵";
         disabled = false;
       };
-      os.disabled = false;
+      os = {
+        disabled = false;
+
+        # Nix-on-Droid is detected as Linux; use ❄️ instead of 🐧.
+        # symbols.Linux = "❄️ ";
+      };
     };
   };
 }

@@ -1,6 +1,6 @@
 # Variables
 
-Common variables and configuration used across my NixOS and nix-darwin configurations.
+Common variables and configuration used across the NixOS configuration.
 
 ## Current Structure
 
