@@ -27,6 +27,6 @@ rec {
     BROWSER = "firefox";
 
     # enable scrolling in git diff
-    DELTA_PAGER = "less -R";
+    # DELTA_PAGER = "less -R";
   };
 }

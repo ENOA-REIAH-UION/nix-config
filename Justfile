@@ -21,7 +21,7 @@ default:
 # Run eval tests
 [group('nix')]
 test:
-  nix eval .#evalTests --show-trace --print-build-logs --verbose
+  nix flake check --accept-flake-config --show-trace --print-build-logs --verbose
 
 # Update all the flake inputs
 [group('nix')]
@@ -45,7 +45,6 @@ repl:
   nix repl -f flake:nixpkgs
 
 # remove all old generations
-# on darwin, you may need to switch to root user to run this command
 [group('nix')]
 clean:
   # Wipe out NixOS's history
@@ -67,18 +66,6 @@ gc:
 [group('nix')]
 shell:
   nix shell nixpkgs#git nixpkgs#neovim nixpkgs#colmena
-
-# Enter a shell session which has all the necessary tools for this flake
-[macos]
-[group('nix')]
-shell:
-  nix shell nixpkgs#git nixpkgs#neovim
-
-# upgrade determinate nix
-[macos]
-[group('nix')]
-nix-upgrade:
-  sudo determinate-nixd upgrade
 
 [group('nix')]
 fmt:
@@ -106,7 +93,7 @@ repair-store *paths:
 # Update all Nixpkgs inputs
 [group('nix')]
 up-nix:
-  nix flake update --commit-lock-file nixpkgs-stable nixpkgs-master nixpkgs-darwin nixpkgs-patched
+  nix flake update --commit-lock-file nixpkgs-stable nixpkgs-master nixpkgs-patched
 
 # override nixpkgs's commit hash
 [group('nix')]
@@ -137,39 +124,37 @@ niri mode="default":
 
 ############################################################################
 #
-#  Darwin related commands
+#  Nix-on-Droid
+#  https://github.com/nix-community/nix-on-droid
 #
+# The Android host consumes the same Home Manager modules as the NixOS
+# configurations; only the Nix-on-Droid system layer is Android-specific.
 ############################################################################
 
-[macos]
-[group('desktop')]
-darwin-set-proxy:
-  sudo python3 scripts/darwin_set_proxy.py
-  sleep 1sec
+# Evaluate/build the Android configuration without activating it
+[group('android')]
+droid-build:
+  nix-on-droid build --flake .#nix-on-droid --show-trace
 
-[macos]
-[group('desktop')]
-darwin-rollback:
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  darwin-rollback
+# Build and activate the Android configuration
+[group('android')]
+droid-switch:
+  nix-on-droid switch --flake .#nix-on-droid --show-trace
 
-# Deploy the darwinConfiguration by hostname match
-[macos]
-[group('desktop')]
-local mode="default": 
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  darwin-build (hostname) {{mode}};
-  darwin-switch (hostname) {{mode}}
+# Update only the Nix-on-Droid input
+[group('android')]
+droid-up:
+  nix flake update nix-on-droid --commit-lock-file
 
+# List Nix-on-Droid generations
+[group('android')]
+droid-generations:
+  nix-on-droid generations
 
-# Reset launchpad to force it to reindex Applications
-[macos]
-[group('desktop')]
-reset-launchpad:
-  defaults write com.apple.dock ResetLaunchPad -bool true
-  killall Dock
+# Roll back to the previous Nix-on-Droid generation
+[group('android')]
+droid-rollback:
+  nix-on-droid rollback
 
 ############################################################################
 #

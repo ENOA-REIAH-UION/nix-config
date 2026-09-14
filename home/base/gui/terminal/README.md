@@ -54,7 +54,7 @@ NixOS preserve the `TERMINFO` and `TERMINFO_DIRS` environment variables, for `ro
 group:
 [nixpkgs/nixos/modules/config/terminfo.nix](https://github.com/NixOS/nixpkgs/blob/nixos-26.05/nixos/modules/config/terminfo.nix#L20-L26)
 
-For nix-darwin, take a look at <https://github.com/LnL7/nix-darwin/wiki/Terminfo-issues>
+For terminal/Terminfo troubleshooting, consult the terminal emulator's documentation.
 
 ### Solutions
 

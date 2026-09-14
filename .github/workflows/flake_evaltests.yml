@@ -39,4 +39,4 @@ jobs:
           echo 'Flake Eval Tests'
           # stack overflow...
           # nix eval .#checks --show-trace --print-build-logs --verbose
-          nix eval .#evalTests --show-trace --print-build-logs --verbose
+          nix flake check --accept-flake-config --show-trace --print-build-logs --verbose
