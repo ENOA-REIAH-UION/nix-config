@@ -4,9 +4,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     preservation.url = "github:nix-community/preservation";
-    disko.url = "github:nix-community/disko/v1.11.0";
+    disko.url = "github:nix-community/disko/v1.13.0";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-    nuenv.url = "github:DeterminateSystems/nuenv";
   };
 
   outputs =
@@ -21,6 +20,11 @@
       myvars = import ../vars { inherit lib; };
     in
     {
+      packages.x86_64-linux = {
+        disko = disko.packages.x86_64-linux.disko;
+        disko-install = disko.packages.x86_64-linux.disko-install;
+      };
+
       nixosConfigurations = {
         ai = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
