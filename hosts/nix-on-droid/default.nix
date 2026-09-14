@@ -17,7 +17,7 @@
     };
   };
 
-  imports = mylib.scanPaths ./droid;
+  imports = [ ./droid ];
 
   environment.packages = with pkgs; [
     curl
