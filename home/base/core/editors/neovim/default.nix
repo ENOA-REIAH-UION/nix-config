@@ -11,4 +11,5 @@
       withPython3 = false;
     };
   };
+  home.file.".config/nvim".source = ./nvim;
 }
