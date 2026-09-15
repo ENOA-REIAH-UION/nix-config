@@ -47,7 +47,7 @@ vim.keymap.set("n", "cw", 'vb"_c')
 -- vim.keymap.set("v", "=", function() require("utils").search(true) end)
 
 -- tab management
-vim.keymap.set({ "n", "v" }, "tt", ":tabe<CR>", { silent = true })
+vim.keymap.set({ "n", "v" }, "tt", ":tabedit<CR>", { silent = true })
 vim.keymap.set({ "n", "v" }, "tT", ":tab split<CR>", { silent = true })
 vim.keymap.set({ "n", "v" }, "tn", ":-tabnext<CR>", { silent = true })
 vim.keymap.set({ "n", "v" }, "ti", ":+tabnext<CR>", { silent = true })
