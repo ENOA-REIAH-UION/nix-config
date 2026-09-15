@@ -6,3 +6,4 @@ vercel.json
 cache
 temp
 .temp
+overlays/fcitx5/rime-data-custom/

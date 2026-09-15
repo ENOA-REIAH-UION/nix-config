@@ -63,7 +63,7 @@
   # 而 prerelease-25.11 使用的 proot-static 已为 6-21，
   # 因此认为该 PR 仅用于修复此前的 proot-static 损坏问题。
   #
-  # PR 合并后，我开始感到怀疑，没想到使用 6-20 的 proot-stati
+  # PR 合并后，我开始感到怀疑，没想到使用 6-20 的 proot-static
   #
   # 不仅不需要以下丑陋的配置，更是解决了 TTY 的问题 (属于是判断失误白折腾了....)
   #
@@ -73,7 +73,7 @@
   #     /data/data/com.termux.nix/files/usr/bin/.proot-static.new
   # '';
 
-  # Hack: 让 bash 指向 sh，确保非 FHS 环境下 Claude CLI 能找到 POSIX shell
+  # Hack: 将 bash 映射为 sh，使 Claude CLI 等依赖 POSIX shell 的软件在非 FHS 环境中能够正常找到并调用 shell
   build.activation.zz_unfuck_shell = ''
     if [ ! -e /data/data/com.termux.nix/files/usr/bin/bash ]; then
       echo "creating bash -> sh symlink for Claude CLI"
