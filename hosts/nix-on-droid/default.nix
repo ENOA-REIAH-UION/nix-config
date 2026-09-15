@@ -29,6 +29,7 @@
     wget
     which
     zip
+		gnused
 
     patchelf
     autoPatchelfHook
