@@ -12,4 +12,7 @@
     };
   };
   home.file.".config/nvim".source = ./nvim;
+  home.packages = with pkgs; [
+    tree-sitter
+  ];
 }
