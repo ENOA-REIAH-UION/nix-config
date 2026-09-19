@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  pkgs-master,
   blender-bin,
   ...
 }:
@@ -11,7 +12,7 @@
       # creative
       # gimp      # image editing, I prefer using figma in browser instead of this one
       inkscape # vector graphics
-      krita # digital painting
+      pkgs-master.krita # digital painting
       musescore # music notation
       # reaper # audio production
       # sonic-pi # music programming
@@ -27,7 +28,7 @@
       celestia # Real-time 3D simulation of space, travel throughout the solar system.
 
       # office
-      libreoffice-qt-still
+      pkgs-master.libreoffice-qt-still
       hunspell # spell check for libreoffice
       hunspellDicts.en_US # USA English
       hyphenDicts.en_GB # British English
