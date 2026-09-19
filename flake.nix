@@ -28,6 +28,13 @@
       mylib = import ./lib { inherit lib; };
       myvars = import ./vars { inherit lib; };
 
+      # systems this flake targets
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      forAllSystems = lib.genAttrs systems;
+
       genSpecialArgs =
         system:
         inputs
@@ -98,20 +105,22 @@
         };
       };
 
-      mkK8s = name: host:
+      mkK8s =
+        name: host:
         let
           tags = [ name ] ++ (host.tags or [ ]);
           commonModules = [
             ./secrets/nixos.nix
             ./modules/nixos/server/server.nix
           ];
-          hardwareModule =
-            lib.optional (!lib.hasPrefix "kubevirt-" name)
-              ./modules/nixos/server/kubevirt-hardware-configuration.nix;
+          hardwareModule = lib.optional (
+            !lib.hasPrefix "kubevirt-" name
+          ) ./modules/nixos/server/kubevirt-hardware-configuration.nix;
           hostModule = ./hosts/k8s/${name};
           extraModules = [
             { modules.secrets.server.kubernetes.enable = true; }
-          ] ++ lib.optional (host.preservation or false) {
+          ]
+          ++ lib.optional (host.preservation or false) {
             modules.secrets.preservation.enable = true;
           };
           modules = commonModules ++ hardwareModule ++ [ hostModule ] ++ extraModules;
@@ -125,7 +134,13 @@
         {
           inherit config tags;
           iso = host.iso or false;
-          colmena = mylib.colmenaSystem (args // { inherit tags; ssh-user = "root"; }) { name = name; };
+          colmena = mylib.colmenaSystem (
+            args
+            // {
+              inherit tags;
+              ssh-user = "root";
+            }
+          ) { name = name; };
         };
 
       k8s = lib.mapAttrs mkK8s k8sHosts;
@@ -154,89 +169,107 @@
         in
         mylib.nixosSystem args;
 
-      nixosConfigurations =
-        (lib.mapAttrs (name: host: host.config) k8s)
-        // { "ai-niri" = idolsAi; };
+      nixosConfigurations = (lib.mapAttrs (name: host: host.config) k8s) // {
+        "ai-niri" = idolsAi;
+      };
 
-      colmena =
-        {
-          meta = {
-            nixpkgs = import nixpkgs { system = "x86_64-linux"; };
-            specialArgs = genSpecialArgs "x86_64-linux";
-          };
-        }
-        // lib.mapAttrs (name: host: host.colmena) k8s;
+      colmena = {
+        meta = {
+          nixpkgs = import nixpkgs { system = "x86_64-linux"; };
+          specialArgs = genSpecialArgs "x86_64-linux";
+        };
+      }
+      // lib.mapAttrs (name: host: host.colmena) k8s;
 
       packages.x86_64-linux =
-        (lib.mapAttrs (name: host:
-          if host.iso then host.config.config.formats.iso
-          else host.config.config.formats.kubevirt
+        (lib.mapAttrs (
+          name: host: if host.iso then host.config.config.formats.iso else host.config.config.formats.kubevirt
         ) k8s)
         // {
           "ai-niri" = idolsAi.config.formats.iso;
         };
 
       # Nix-on-Droid is intentionally kept small for now: TUI only.
-      nixOnDroidConfigurations."nix-on-droid" =
-        nix-on-droid.lib.nixOnDroidConfiguration {
-          pkgs = import nixpkgs {
+      nixOnDroidConfigurations."nix-on-droid" = nix-on-droid.lib.nixOnDroidConfiguration {
+        pkgs = import nixpkgs {
+          system = "aarch64-linux";
+          config.allowUnfree = true;
+        };
+        extraSpecialArgs = {
+          inherit inputs mylib myvars;
+          pkgs-master = import nixpkgs-master {
             system = "aarch64-linux";
             config.allowUnfree = true;
           };
-          extraSpecialArgs = {
-            inherit inputs mylib myvars;
-            pkgs-master = import nixpkgs-master {
-              system = "aarch64-linux";
-              config.allowUnfree = true;
-            };
-           };
-          modules = [ ./hosts/nix-on-droid ];
         };
-
-      checks.x86_64-linux.pre-commit-check = pre-commit-hooks.lib.x86_64-linux.run {
-        src = ./.;
-        hooks = {
-          nixfmt-rfc-style = {
-            enable = true;
-            settings.width = 100;
-          };
-          typos = {
-            enable = true;
-            settings = {
-              write = true;
-              configPath = ".typos.toml";
-              exclude = "rime-data/";
-            };
-          };
-          prettier = {
-            enable = true;
-            settings = {
-              write = true;
-              configPath = ".prettierrc.yaml";
-            };
-          };
-        };
+        modules = [ ./hosts/nix-on-droid ];
       };
 
-      devShells.x86_64-linux.default =
-        nixpkgs.legacyPackages.x86_64-linux.mkShell {
-          packages = with nixpkgs.legacyPackages.x86_64-linux; [
-            bashInteractive
-            gcc
-            nixfmt
-            deadnix
-            statix
-            typos
-            prettier
-          ];
-          name = "dots";
-          shellHook = self.checks.x86_64-linux.pre-commit-check.shellHook;
-        };
+      ##############################################################################
+      # Formatting / linting tooling, available on every supported system.
+      ##############################################################################
 
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
+      checks = forAllSystems (system: {
+        pre-commit-check = pre-commit-hooks.lib.${system}.run {
+          src = ./.;
+          hooks = {
+            nixfmt-rfc-style = {
+              enable = true;
+              settings.width = 100;
+            };
+            typos = {
+              enable = true;
+              settings = {
+                write = true;
+                configPath = ".typos.toml";
+                exclude = "rime-data/";
+              };
+            };
+            prettier = {
+              enable = true;
+              settings = {
+                write = true;
+                configPath = ".prettierrc.yaml";
+              };
+            };
+          };
+        };
+      });
+
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              bashInteractive
+              gcc
+              nixfmt
+              deadnix
+              statix
+              typos
+              prettier
+            ];
+            name = "dots";
+            shellHook = self.checks.${system}.pre-commit-check.shellHook;
+          };
+        }
+      );
+
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
     in
     {
-      inherit nixosConfigurations colmena packages checks devShells formatter nixOnDroidConfigurations;
+      inherit
+        nixosConfigurations
+        colmena
+        packages
+        checks
+        devShells
+        formatter
+        nixOnDroidConfigurations
+        ;
     };
 
   # the nixConfig here only affects the flake itself, not the system configuration!
