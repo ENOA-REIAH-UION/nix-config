@@ -40,19 +40,19 @@ in
   };
 
   build.activation.android-gradle-config = ''
-    mkdir -p "$HOME/.gradle"
+        mkdir -p "$HOME/.gradle"
 
-    BUILD_TOOLS_DIR="${android.sdk}/build-tools"
+        BUILD_TOOLS_DIR="${android.sdk}/build-tools"
 
-    LATEST_BUILD_TOOLS="$(
-      ls -1 "$BUILD_TOOLS_DIR" |
-      sort -V |
-      tail -n1
-    )"
+        LATEST_BUILD_TOOLS="$(
+          ls -1 "$BUILD_TOOLS_DIR" |
+          sort -V |
+          tail -n1
+        )"
 
-    cat > "$HOME/.gradle/gradle.properties" <<EOF
-android.aapt2FromMavenOverride=$BUILD_TOOLS_DIR/$LATEST_BUILD_TOOLS/aapt2
-org.gradle.console=rich
-EOF
+        cat > "$HOME/.gradle/gradle.properties" <<EOF
+    android.aapt2FromMavenOverride=$BUILD_TOOLS_DIR/$LATEST_BUILD_TOOLS/aapt2
+    org.gradle.console=rich
+    EOF
   '';
 }
