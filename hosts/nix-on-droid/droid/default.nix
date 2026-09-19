@@ -1,7 +1,5 @@
 { mylib, ... }:
 
 {
-  imports = builtins.filter
-    (p: !(baseNameOf p == "android-toolchain.nix"))
-    (mylib.scanPaths ./.);
+  imports = builtins.filter (p: !(baseNameOf p == "android-toolchain.nix")) (mylib.scanPaths ./.);
 }

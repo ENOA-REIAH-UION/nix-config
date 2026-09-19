@@ -1,4 +1,10 @@
-{ pkgs, myvars, mylib, pkgs-master, ... }:
+{
+  pkgs,
+  myvars,
+  mylib,
+  pkgs-master,
+  ...
+}:
 
 {
   # Nix-on-Droid is the Android host layer. The user environment itself is
@@ -13,7 +19,7 @@
     config = {
       imports = [
         ../../home/nix-on-droid.nix
-       ];
+      ];
     };
   };
 
@@ -29,7 +35,7 @@
     wget
     which
     zip
-		gnused
+    gnused
 
     patchelf
     autoPatchelfHook
@@ -83,27 +89,27 @@
 
   # extra-keys 等设置项非 termux-app(nix-on-droid-app) 主分支
   build.activation.termux-extra-keys = ''
-    mkdir -p "$HOME/.termux"
-    cat > "$HOME/.termux/termux.properties" <<'EOF'
-extra-keys = [['ESC','TAB','CTRL','ALT','LEFT','UP','DOWN','RIGHT']]
-extra-keys-button-text-color=#FFFFFF
-extra-keys-button-active-text-color=#FF5555
-extra-keys-button-background-color=#99000000
-extra-keys-button-active-background-color=#444444
-extra-keys-button-area-background-color=#00000000
-extra-keys-button-gap=8
-EOF
+        mkdir -p "$HOME/.termux"
+        cat > "$HOME/.termux/termux.properties" <<'EOF'
+    extra-keys = [['ESC','TAB','CTRL','ALT','LEFT','UP','DOWN','RIGHT']]
+    extra-keys-button-text-color=#FFFFFF
+    extra-keys-button-active-text-color=#FF5555
+    extra-keys-button-background-color=#99000000
+    extra-keys-button-active-background-color=#444444
+    extra-keys-button-area-background-color=#00000000
+    extra-keys-button-gap=8
+    EOF
   '';
 
   build.activation.termux-color = ''
-    mkdir -p "$HOME/.termux"
-    cat > "$HOME/.termux/colors.properties" <<'EOF'
-background=#23232F
-cursor=#FFFFFF
-foreground=#FFFFFF
-# background-image=
-background-alpha=0.8
-EOF
+        mkdir -p "$HOME/.termux"
+        cat > "$HOME/.termux/colors.properties" <<'EOF'
+    background=#23232F
+    cursor=#FFFFFF
+    foreground=#FFFFFF
+    # background-image=
+    background-alpha=0.8
+    EOF
   '';
 
 }

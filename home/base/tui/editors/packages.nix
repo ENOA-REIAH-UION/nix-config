@@ -27,7 +27,7 @@
         taplo # TOML language server / formatter / validator
         yaml-language-server
         yamlfmt
-        
+
         actionlint # GitHub Actions linter
 
         #-- dockerfile

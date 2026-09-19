@@ -33,7 +33,7 @@ in
       # If multiple fingerprints are specified, each separated by a whitespace character, then signatures must match at least one.
       # The init command will keep signatures of .gpg-id files up to date.
       PASSWORD_STORE_SIGNING_KEY = lib.strings.concatStringsSep " " [
-        "2588A413C7FC2ACD" #S enoa <i@enoa.me>
+        "2588A413C7FC2ACD" # S enoa <i@enoa.me>
         # "C2A313F98166C942" # S - Ryan Yin (For pass & ssh only) <ryan4yin@linux.com>
       ];
       PASSWORD_STORE_CLIP_TIME = "60";
