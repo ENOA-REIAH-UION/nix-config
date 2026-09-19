@@ -49,7 +49,6 @@ You don't have to go through the pain I've experienced again! Check out my
 
 > If you're using Android with Nix-on-Droid, keep the `nix-on-droid` host intentionally lightweight.
 
-
 ## Components
 
 |                                                                | NixOS(Wayland)                                                                                                      |
@@ -125,10 +124,10 @@ just niri debug
 
 For Android / Nix-on-Droid:
 
-Install the Nix-on-Droid app and choose the flake setup during first launch. Nix-on-Droid is not
-a full NixOS installation; it provides a Nix-managed terminal environment on Android. The first
-switch can be done from a temporary `git` shell; after applying this configuration, `git`, `just`,
-Helix and Nushell are managed declaratively.
+Install the Nix-on-Droid app and choose the flake setup during first launch. Nix-on-Droid is not a
+full NixOS installation; it provides a Nix-managed terminal environment on Android. The first switch
+can be done from a temporary `git` shell; after applying this configuration, `git`, `just`, Helix
+and Nushell are managed declaratively.
 
 ```bash
 nix shell nixpkgs#git
@@ -140,8 +139,8 @@ nix-on-droid switch --flake .#nix-on-droid --show-trace
 just droid-switch
 ```
 
-The Android configuration intentionally stays TUI-only: Nushell, Helix, Git, OpenSSH and a small
-set of command-line utilities. Use `just android` to see the available Android commands.
+The Android configuration intentionally stays TUI-only: Nushell, Helix, Git, OpenSSH and a small set
+of command-line utilities. Use `just android` to see the available Android commands.
 
 For desktop Linux:
 
