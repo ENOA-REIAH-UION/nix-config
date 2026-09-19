@@ -1,4 +1,9 @@
-{ lib, pkgs, nu_scripts, ... }:
+{
+  lib,
+  pkgs,
+  nu_scripts,
+  ...
+}:
 
 {
   user.shell = "${pkgs.nushell}/bin/nu";
