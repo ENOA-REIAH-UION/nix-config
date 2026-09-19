@@ -6,8 +6,7 @@ This directory contains host-specific NixOS and Nix-on-Droid configurations.
 
 ### `idols-ai`
 
-The main NixOS workstation configuration. The flake exposes it as
-`nixosConfigurations.ai-niri`.
+The main NixOS workstation configuration. The flake exposes it as `nixosConfigurations.ai-niri`.
 
 ### `k8s`
 
@@ -19,9 +18,8 @@ Kubernetes infrastructure:
 
 ### `nix-on-droid`
 
-A lightweight Android configuration exposed as
-`nixOnDroidConfigurations.nix-on-droid`. It currently focuses on TUI tooling,
-with Nushell, Helix, Git, and a small set of command-line utilities.
+A lightweight Android configuration exposed as `nixOnDroidConfigurations.nix-on-droid`. It currently
+focuses on TUI tooling, with Nushell, Helix, Git, and a small set of command-line utilities.
 
 ## Adding a Host
 
