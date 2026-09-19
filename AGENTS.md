@@ -108,7 +108,6 @@ nixos-rebuild switch --flake .#<hostname>
 
 Eval tests live under:
 
-
 Typical test pair:
 
 - `expr.nix`

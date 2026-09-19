@@ -169,6 +169,7 @@ the `age.secrets.<name>.path` argument, which defaults to `/etc/secrets`.
    1. Add the public key to `secrets.nix`, and rekey all the secrets via
       `sudo agenix -r -i /etc/ssh/ssh_host_ed25519_key`.
    2. Commit and push the changes to `nix-secrets`.
+
 3. On the new host:
    1. Clone this repo and run `nixos-rebuild switch` to deploy it, all the secrets will be decrypted
       automatically via the host private key.
@@ -195,6 +196,7 @@ journalctl | grep -5 agenix
 ## Other Replacements
 
 - [ragenix](https://github.com/yaxitech/ragenix): A Rust reimplementation of agenix.
+
   - agenix is mainly written in bash, and it's error message is quite obscure, a little typo may
     cause some errors no one can understand.
   - with a type-safe language like Rust, we can get a better error message and less bugs.

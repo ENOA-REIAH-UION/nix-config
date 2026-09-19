@@ -19,8 +19,8 @@ partitioning is no longer needed.
 ## Steps to deploy
 
 The installer flake is kept aligned with the current main configuration and uses
-[disko](https://github.com/nix-community/disko) `v1.13.0`. Before installing, verify the
-installer flake with `just check` and build it with `just build`.
+[disko](https://github.com/nix-community/disko) `v1.13.0`. Before installing, verify the installer
+flake with `just check` and build it with `just build`.
 
 1. Create a USB install medium from the official NixOS ISO and boot from it.
 

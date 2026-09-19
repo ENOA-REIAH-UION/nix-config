@@ -1,8 +1,10 @@
 # Nix 环境配置 - Idols - Ai 主机
 
-> :red_circle: **重要提示**: **请勿直接在您的机器上部署此 flake。** 请从头编写您自己的配置，只将本项目作为参考。
+> :red_circle: **重要提示**: **请勿直接在您的机器上部署此 flake。**
+> 请从头编写您自己的配置，只将本项目作为参考。
 
-此 flake 用于在全新机器上准备 Nix 环境，以设置桌面主机 [hosts/idols-ai](../hosts/idols-ai/)（来自主 flake）。
+此 flake 用于在全新机器上准备 Nix 环境，以设置桌面主机
+[hosts/idols-ai](../hosts/idols-ai/)（来自主 flake）。
 
 其他文档：
 
@@ -17,8 +19,8 @@
 
 磁盘布局通过 [disko](https://github.com/nix-community/disko) 实现**声明式**配置，无需手动分区。
 
-本 installer flake 固定使用 disko `v1.13.0`。安装前可以在 `nixos-installer/` 目录执行
-`just check` 验证配置，执行 `just build` 构建安装系统。
+本 installer flake 固定使用 disko `v1.13.0`。安装前可以在 `nixos-installer/` 目录执行 `just check`
+验证配置，执行 `just build` 构建安装系统。
 
 ## 部署步骤
 
@@ -29,6 +31,7 @@
 ### 1. 使用 disko 分区和挂载（推荐）
 
 磁盘布局定义在 [../hosts/idols-ai/disko-fs.nix](../hosts/idols-ai/disko-fs.nix)：
+
 - 目标磁盘：**nvme1n1**
 - 分区结构：ESP (450M) + LUKS + btrfs
 - btrfs 子卷：@nix, @guix, @persistent, @snapshots, @tmp, @swap
@@ -66,7 +69,8 @@ just install
 
 ### 3. 复制数据到 /persistent 并重启
 
-Preservation 期望数据存放在 `/persistent`；将数据复制或迁移到该目录（例如从旧磁盘），然后退出 chroot 并重启。
+Preservation 期望数据存放在
+`/persistent`；将数据复制或迁移到该目录（例如从旧磁盘），然后退出 chroot 并重启。
 
 ```bash
 nixos-enter
@@ -102,7 +106,8 @@ ssh-add ~/.ssh/idols_ai
 
 ### 2. 重新生成 secrets
 
-按照 [../secrets/README.md](../secrets/README.md) 的说明重新生成 secrets，使 agenix 能够使用此主机的 SSH 密钥进行解密。
+按照 [../secrets/README.md](../secrets/README.md)
+的说明重新生成 secrets，使 agenix 能够使用此主机的 SSH 密钥进行解密。
 
 ### 3. 部署主配置
 
@@ -115,6 +120,7 @@ sudo nixos-rebuild switch --flake .#ai-niri --show-trace
 ### 4. 配置 Secure Boot
 
 按照以下文档配置：
+
 - [lanzaboote Quick Start](https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md)
 - [hosts/idols-ai/secureboot.nix](../hosts/idols-ai/secureboot.nix)
 
@@ -142,7 +148,8 @@ sudo nixos-rebuild switch --flake .#ai
 
 ## 修改磁盘布局
 
-如果需要调整分区或子卷布局，编辑 [../hosts/idols-ai/disko-fs.nix](../hosts/idols-ai/disko-fs.nix)，然后重新运行 disko：
+如果需要调整分区或子卷布局，编辑
+[../hosts/idols-ai/disko-fs.nix](../hosts/idols-ai/disko-fs.nix)，然后重新运行 disko：
 
 ```bash
 # 重新格式化（会清除数据！）
