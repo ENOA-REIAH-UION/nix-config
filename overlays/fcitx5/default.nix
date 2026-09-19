@@ -1,6 +1,7 @@
 # 覆盖 nixpkgs 默认的 Rime 数据，使用自定义方案数据。
 # 参考： https://github.com/NixOS/nixpkgs/blob/e4246ae1e7f78b7087dce9c9da10d28d3725025f/pkgs/tools/inputmethods/fcitx5/fcitx5-rime.nix
-_: (final: prev: {
+_:
+(final: prev: {
   fcitx5-rime = prev.fcitx5-rime.override {
     rimeDataPkgs = [
       # nixpkgs 默认的 `rime-data` 包含 `rime-prelude` 等基础配置，

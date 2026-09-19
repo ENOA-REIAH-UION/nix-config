@@ -16,7 +16,8 @@ let
   };
 
   ndk = android.ndk;
-in {
+in
+{
   environment.packages = [
     (pkgs.stdenv.mkDerivation rec {
       pname = "termux-api";
