@@ -25,7 +25,7 @@
 
       # Astronomy
       stellarium # See what you can see with your eyes, binoculars or a small telescope.
-      celestia # Real-time 3D simulation of space, travel throughout the solar system.
+      # celestia # Real-time 3D simulation of space, travel throughout the solar system.
 
       # office
       pkgs-master.libreoffice-qt-still
