@@ -4,6 +4,6 @@
 patch:
   "ascii_composer/switch_key/+":
     Shift_L: commit_code
-  schema_list:
+  "schema_list/+":
     - schema: liuli4
     - schema: simp_pinyin

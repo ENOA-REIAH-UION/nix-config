@@ -42,19 +42,17 @@ engine:
     - ascii_segmentor
     - matcher
     - abc_segmentor
-    - affix_segmentor@extra
     - punct_segmentor
     - fallback_segmentor
   translators:
     - punct_translator
     - table_translator
-    - script_translator@simp_pinyin
+    - reverse_lookup_translator
     - history_translator
   filters:
     - simplifier@zh_s2t
     - simplifier@division
     - simplifier@division_reverse
-    - reverse_lookup_filter@reverse_lookup
     - uniquifier
 
 speller:
@@ -87,26 +85,18 @@ division:
 division_reverse:
   __include: division
   option_name: division_reverse
-  tags: [extra]
-
-extra:
-  tag: extra
-  prefix: "`"
-  tips: "〔反查〕"
-
-simp_pinyin:
-  tag: extra
-  dictionary: simp_pinyin
-  enable_user_dict: false
-  initial_quality: 1
+  tags: [ reverse_lookup ]
 
 reverse_lookup:
-  dictionary: liuli4
+  prefix: "`"
+  tips: "〔反查〕"
+  dictionary: simp_pinyin
   overwrite_comment: true
+  enable_user_dict: false
   comment_format:
     - "xform/~//"
     - xform/\d//
-  tags: [extra]
+  tags: [reverse_lookup]
 
 history:
   tag: history
@@ -153,4 +143,4 @@ recognizer:
   patterns:
     punct: "^/([0-9]0?|[A-Za-z]+)$"
     history: '^z$'
-    extra: '^`[a-z]*$'
+    reverse_lookup: '^`[a-z]*$'

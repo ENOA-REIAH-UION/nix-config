@@ -13,7 +13,7 @@ _:
       # 若自定义方案依赖这些基础配置，可以同时引入 `prev.rime-data` 和自定义数据，
       # 或是在自定义数据中补全所依赖的基础配置。
       #
-      # prev.rime-data
+      prev.rime-data
 
       final.rime-data-custom
     ];
