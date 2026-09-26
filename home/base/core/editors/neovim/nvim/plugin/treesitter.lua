@@ -210,13 +210,13 @@ require("nvim-ts-autotag").setup()
 -- Treesitter Context
 -- ============================================================================
 
-vim.pack.add({
-	{
-		src = "https://github.com/nvim-treesitter/nvim-treesitter-context",
-	},
-})
-
-require("treesitter-context").setup()
+-- vim.pack.add({
+-- 	{
+-- 		src = "https://github.com/nvim-treesitter/nvim-treesitter-context",
+-- 	},
+-- })
+--
+-- require("treesitter-context").setup()
 
 -- ============================================================================
 -- Rainbow Delimiters
