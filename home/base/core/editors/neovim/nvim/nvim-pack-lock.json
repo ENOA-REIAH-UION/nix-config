@@ -65,6 +65,10 @@
       "rev": "b8bd44d5796503173627d7a1fc51f77ec3a08a63",
       "src": "https://github.com/tanvirtin/monokai.nvim"
     },
+    "monokai-pro.nvim": {
+      "rev": "a68e38b8e55d69a215d0f02598900a79c356da9d",
+      "src": "https://github.com/loctvl842/monokai-pro.nvim"
+    },
     "neoscroll.nvim": {
       "rev": "c8d29979cb0cb3a2437a8e0ae683fd82f340d3b8",
       "src": "https://github.com/karb94/neoscroll.nvim"
