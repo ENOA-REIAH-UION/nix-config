@@ -3,6 +3,7 @@
   myvars,
   mylib,
   pkgs-master,
+  inputs,
   ...
 }:
 
@@ -13,7 +14,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-bak";
-    extraSpecialArgs = {
+    extraSpecialArgs = inputs // {
       inherit myvars mylib pkgs-master;
     };
     config = {
