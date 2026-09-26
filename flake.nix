@@ -195,7 +195,7 @@
           system = "aarch64-linux";
           config.allowUnfree = true;
         };
-        extraSpecialArgs = {
+        extraSpecialArgs = inputs // {
           inherit inputs mylib myvars;
           pkgs-master = import nixpkgs-master {
             system = "aarch64-linux";
