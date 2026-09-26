@@ -9,6 +9,7 @@
     ./base/core/starship.nix
     ./base/core/editors/default.nix
     ./base/tui/editors/default.nix
+    ./base/core/yazi.nix
   ];
 
   home.stateVersion = "25.11";
