@@ -87,7 +87,6 @@ vim.api.nvim_create_autocmd("User", {
 
 		require("lualine").setup({
 			options = {
-				theme = "catppuccin-nvim",
 				component_separators = { left = "│", right = "│" },
 				section_separators = { left = "", right = "" },
 				globalstatus = true,
@@ -175,237 +174,295 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 })
 
--- ============================================================================
--- Telescope
--- ============================================================================
-
 local telescope_loaded = false
 
 local extra_args = {
-	"--hidden",
-	"--no-ignore",
-	"-g",
-	"!.git/",
-	"-g",
-	"!node_modules/",
-	"-g",
-	"!.idea/",
-	"-g",
-	"!pnpm-lock.yaml",
-	"-g",
-	"!package-lock.json",
-	"-g",
-	"!go.sum",
-	"-g",
-	"!lazy-lock.json",
-	"-g",
-	"!.zsh_history",
+  "--hidden",
+  "--no-ignore",
+  "--glob", "!.git/",
+  "--glob", "!node_modules/",
+  "--glob", "!.idea/",
+  "--glob", "!package-lock.json",
+  "--glob", "!yarn.lock",
+  "--glob", "!pnpm-lock.yaml",
+  "--glob", "!.zsh_history",
 }
 
 local function load_telescope()
-	if telescope_loaded then
-		return
-	end
+  if telescope_loaded then
+    return
+  end
 
-	load_many(
-		"plenary.nvim",
-		"nvim-web-devicons",
-		"telescope-fzy-native.nvim",
-		"sqlite.lua",
-		"smart-open.nvim",
-		"telescope.nvim"
-	)
+  telescope_loaded = true
 
-	local telescope = require("telescope")
-	local actions = require("telescope.actions")
-	local trouble = require("trouble.sources.telescope")
+  load_many(
+    "plenary.nvim",
+    "nvim-web-devicons",
+    "telescope-fzy-native.nvim",
+    "telescope.nvim"
+  )
 
-	telescope.setup({
-		defaults = {
-			scroll_strategy = "limit",
-			prompt_prefix = " ",
-			selection_caret = " ",
-			multi_icon = " ",
+  local telescope = require("telescope")
 
-			mappings = {
-				i = {
-					["<C-n>"] = false,
-					["<C-u>"] = actions.cycle_history_prev,
-					["<C-e>"] = actions.cycle_history_next,
-					["<M-u>"] = actions.preview_scrolling_up,
-					["<M-e>"] = actions.preview_scrolling_down,
-					["<C-h>"] = actions.select_horizontal,
-					["<C-t>"] = actions.select_tab,
-					["<C-q>"] = trouble.open,
-				},
+  telescope.setup({
+    defaults = {
+      file_ignore_patterns = {
+        "%.git/",
+        "node_modules/",
+        "%.idea/",
+        "package%-lock%.json",
+        "yarn%.lock",
+        "pnpm%-lock%.yaml",
+        "%.zsh_history",
+      },
 
-				n = {
-					["k"] = false,
-					["<S-Tab>"] = false,
-					["<Tab>"] = actions.toggle_selection,
-					["<BS>"] = actions.delete_buffer,
-					["u"] = actions.move_selection_previous,
-					["e"] = actions.move_selection_next,
+      mappings = {
+        i = {
+          ["<C-u>"] = "cycle_history_next",
+          ["<C-e>"] = "cycle_history_prev",
 
-					["U"] = function(prompt_bufnr)
-						require("telescope.actions.set").shift_selection(prompt_bufnr, -5)
-					end,
+          ["<A-u>"] = "preview_scrolling_up",
+          ["<A-e>"] = "preview_scrolling_down",
 
-					["E"] = function(prompt_bufnr)
-						require("telescope.actions.set").shift_selection(prompt_bufnr, 5)
-					end,
+          ["<C-h>"] = "which_key",
+          ["<C-t>"] = "select_tab",
+          ["<C-q>"] = "smart_send_to_qflist",
+        },
 
-					["<C-u>"] = actions.cycle_history_prev,
-					["<C-e>"] = actions.cycle_history_next,
-					["<M-u>"] = actions.preview_scrolling_up,
-					["<M-e>"] = actions.preview_scrolling_down,
-					["s"] = actions.select_vertical,
-					["h"] = actions.select_horizontal,
-					["t"] = actions.select_tab,
-					["<C-q>"] = trouble.open,
-				},
-			},
+        n = {
+          ["k"] = false,
+          ["<S-Tab>"] = false,
 
-			buffer_previewer_maker = function(filepath, bufnr, opts)
-				require("plenary.job")
-					:new({
-						command = "file",
-						args = { "-b", "--mime", filepath },
+          ["<Tab>"] = "toggle_selection",
+          ["<BS>"] = "delete_buffer",
 
-						on_exit = function(job)
-							local result = job:result()
+          ["u"] = "move_selection_previous",
+          ["e"] = "move_selection_next",
 
-							if result[1] and result[1]:find("charset=binary", 1, true) then
-								vim.schedule(function()
-									vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { "BINARY" })
-								end)
-							else
-								require("telescope.previewers").buffer_previewer_maker(filepath, bufnr, opts)
-							end
-						end,
-					})
-					:sync()
-			end,
-		},
+          ["U"] = function(prompt_bufnr)
+            for _ = 1, 5 do
+              require("telescope.actions").move_selection_previous(prompt_bufnr)
+            end
+          end,
 
-		pickers = {
-			find_files = { previewer = false },
-			live_grep = { theme = "ivy" },
-			lsp_references = { theme = "ivy" },
-			lsp_definitions = { theme = "ivy" },
-			lsp_type_definitions = { theme = "ivy" },
-			lsp_implementations = { theme = "ivy" },
+          ["E"] = function(prompt_bufnr)
+            for _ = 1, 5 do
+              require("telescope.actions").move_selection_next(prompt_bufnr)
+            end
+          end,
 
-			lsp_dynamic_workspace_symbols = {
-				sorter = telescope.extensions.fzy_native.native_fzy_sorter(),
-			},
-		},
+          ["<C-u>"] = "cycle_history_next",
+          ["<C-e>"] = "cycle_history_prev",
 
-		extensions = {
-			fzy_native = {
-				override_generic_sorter = true,
-				override_file_sorter = true,
-			},
+          ["<A-u>"] = "preview_scrolling_up",
+          ["<A-e>"] = "preview_scrolling_down",
 
-			smart_open = {
-				mappings = {
-					i = {
-						["<C-w>"] = function()
-							vim.api.nvim_input("<c-s-w>")
-						end,
-					},
-				},
-			},
-		},
-	})
+          ["s"] = "select_vertical",
+          ["h"] = "select_horizontal",
+          ["t"] = "select_tab",
 
-	telescope.load_extension("fzy_native")
-	telescope.load_extension("smart_open")
+          ["<C-q>"] = "smart_send_to_qflist",
+        },
+      },
+    },
 
-	telescope_loaded = true
+    pickers = {
+      find_files = {
+        hidden = true,
+        previewer = false,
+      },
+
+      live_grep = {
+        additional_args = function()
+          return extra_args
+        end,
+      },
+
+      grep_string = {
+        additional_args = function()
+          return extra_args
+        end,
+      },
+
+      buffers = {
+        sort_lastused = true,
+        ignore_current_buffer = false,
+      },
+    },
+
+    extensions = {
+      fzy_native = {
+        override_generic_sorter = true,
+        override_file_sorter = true,
+      },
+    },
+  })
+
+  telescope.load_extension("fzy_native")
 end
 
--- Telescope keymaps
-vim.keymap.set("n", ",a", function()
-	load_telescope()
-	require("telescope.builtin").buffers()
-end)
-
-vim.keymap.set("n", "<leader>;", function()
-	load_telescope()
-	require("telescope.builtin").command_history()
-end)
-
-vim.keymap.set("n", "<leader>e", function()
-	load_telescope()
-	require("telescope.builtin").find_files()
-end)
-
-vim.keymap.set("n", "<leader>E", function()
-	load_telescope()
-	require("telescope.builtin").find_files({
-		find_command = {
-			"rg",
-			"--color=never",
-			"--smart-case",
-			"--files",
-			unpack(extra_args),
-		},
-	})
-end)
-
-vim.keymap.set("n", "<leader>/", function()
-	load_telescope()
-	require("telescope.builtin").live_grep()
-end)
-
-vim.keymap.set("n", "<leader>?", function()
-	load_telescope()
-	require("telescope.builtin").live_grep({
-		additional_args = extra_args,
-	})
-end)
-
-vim.keymap.set("n", "<leader>l", function()
-	load_telescope()
-	require("telescope.builtin").lsp_references({
-		initial_mode = "normal",
-		reuse_win = true,
-	})
-end)
-
-vim.keymap.set("n", "<leader>b", function()
-	load_telescope()
-	require("telescope.builtin").lsp_definitions({
-		initial_mode = "normal",
-		reuse_win = true,
-	})
-end)
-
-vim.keymap.set("n", "<leader>m", function()
-	load_telescope()
-	require("telescope.builtin").lsp_type_definitions({
-		initial_mode = "normal",
-		reuse_win = true,
-	})
-end)
-
-vim.keymap.set("n", "<leader>i", function()
-	load_telescope()
-	require("telescope.builtin").lsp_implementations({
-		initial_mode = "normal",
-		reuse_win = true,
-	})
-end)
+local function telescope_builtin(name, opts)
+  load_telescope()
+  require("telescope.builtin")[name](opts)
+end
 
 vim.keymap.set("n", "<leader><leader>", function()
-	load_telescope()
+  local cwd = vim.fn.expand("%:p:h")
+  if cwd == "" then
+    cwd = vim.fn.getcwd()
+  end
+  telescope_builtin("find_files", {
+    cwd = cwd,
+  })
+end, { desc = "Find Files (buffer dir)" })
 
-	require("telescope").extensions.smart_open.smart_open(require("telescope.themes").get_dropdown({
-		cwd_only = true,
-		previewer = false,
-	}))
-end)
+vim.keymap.set("n", "<leader>,", function()
+  telescope_builtin("buffers")
+end, { desc = "Buffers" })
+
+vim.keymap.set("n", "<leader>fb", function()
+  telescope_builtin("buffers")
+end, { desc = "Buffers" })
+
+vim.keymap.set("n", "<leader>fB", function()
+  telescope_builtin("buffers", {
+    sort_lastused = true,
+  })
+end, { desc = "Buffers" })
+
+vim.keymap.set("n", "<leader>ff", function()
+  telescope_builtin("find_files", {
+    cwd = vim.fn.getcwd(),
+  })
+end, { desc = "Find Files" })
+
+vim.keymap.set("n", "<leader>fc", function()
+  telescope_builtin("find_files", {
+    cwd = vim.fn.stdpath("config"),
+  })
+end, { desc = "Config Files" })
+
+vim.keymap.set("n", "<leader>fr", function()
+  telescope_builtin("oldfiles")
+end, { desc = "Recent Files" })
+
+vim.keymap.set("n", "<leader>fR", function()
+  telescope_builtin("oldfiles", {
+    cwd_only = true,
+  })
+end, { desc = "Recent Files (cwd)" })
+
+vim.keymap.set("n", "<leader>fg", function()
+  telescope_builtin("git_files")
+end, { desc = "Git Files" })
+
+vim.keymap.set("n", "<leader>sg", function()
+  telescope_builtin("live_grep")
+end, { desc = "Live Grep" })
+
+vim.keymap.set("n", "<leader>sw", function()
+  telescope_builtin("grep_string")
+end, { desc = "Word Search" })
+
+vim.keymap.set("n", "<leader>sq", function()
+  telescope_builtin("quickfix")
+end, { desc = "Quickfix" })
+
+vim.keymap.set("n", "<leader>sh", function()
+  telescope_builtin("help_tags")
+end, { desc = "Help" })
+
+vim.keymap.set("n", "<leader>sk", function()
+  telescope_builtin("keymaps")
+end, { desc = "Keymaps" })
+
+vim.keymap.set("n", "<leader>sc", function()
+  telescope_builtin("command_history")
+end, { desc = "Command History" })
+
+vim.keymap.set("n", "<leader>sC", function()
+  telescope_builtin("commands")
+end, { desc = "Commands" })
+
+vim.keymap.set("n", "<leader>sd", function()
+  telescope_builtin("diagnostics")
+end, { desc = "Diagnostics" })
+
+vim.keymap.set("n", "<leader>ss", function()
+  telescope_builtin("lsp_document_symbols")
+end, { desc = "Document Symbols" })
+
+vim.keymap.set("n", "<leader>sS", function()
+  telescope_builtin("lsp_dynamic_workspace_symbols")
+end, { desc = "Workspace Symbols" })
+
+vim.keymap.set("n", "<leader>l", function()
+  telescope_builtin("lsp_references")
+end, { desc = "LSP References" })
+
+vim.keymap.set("n", "<leader>b", function()
+  telescope_builtin("lsp_definitions")
+end, { desc = "LSP Definitions" })
+
+vim.keymap.set("n", "<leader>m", function()
+  telescope_builtin("lsp_type_definitions")
+end, { desc = "LSP Type Definitions" })
+
+vim.keymap.set("n", "<leader>i", function()
+  telescope_builtin("lsp_implementations")
+end, { desc = "LSP Implementations" })
+
+vim.keymap.set("n", "<leader>gc", function()
+  telescope_builtin("git_commits")
+end, { desc = "Git Commits" })
+
+vim.keymap.set("n", "<leader>gs", function()
+  telescope_builtin("git_status")
+end, { desc = "Git Status" })
+
+vim.keymap.set("n", "<leader>gS", function()
+  telescope_builtin("git_stash")
+end, { desc = "Git Stash" })
+
+vim.keymap.set("n", ",a", function()
+  telescope_builtin("buffers")
+end, { desc = "Buffers" })
+
+vim.keymap.set("n", "<leader>;", function()
+  telescope_builtin("command_history")
+end, { desc = "Command History" })
+
+vim.keymap.set("n", "<leader>e", function()
+  telescope_builtin("find_files", {
+    cwd = vim.fn.getcwd(),
+  })
+end, { desc = "Find Files" })
+
+vim.keymap.set("n", "<leader>E", function()
+  load_telescope()
+
+  require("telescope.builtin").find_files({
+    cwd = vim.fn.getcwd(),
+    find_command = vim.list_extend(
+      { "rg", "--files" },
+      extra_args
+    ),
+  })
+end, { desc = "Find Files (all)" })
+
+vim.keymap.set("n", "<leader>/", function()
+  telescope_builtin("live_grep")
+end, { desc = "Live Grep" })
+
+vim.keymap.set("n", "<leader>?", function()
+  load_telescope()
+
+  require("telescope.builtin").live_grep({
+    additional_args = function()
+      return extra_args
+    end,
+  })
+end, { desc = "Live Grep (all)" })
 
 -- ============================================================================
 -- Mason
