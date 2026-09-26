@@ -4,6 +4,7 @@
     enable = true;
     package = pkgs.helix;
     settings = {
+      theme = "monokai_pro";
       editor = {
         # Display & cursor
         line-number = "relative";
