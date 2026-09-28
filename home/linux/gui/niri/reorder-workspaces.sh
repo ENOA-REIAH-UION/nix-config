@@ -3,17 +3,17 @@ set -euo pipefail
 
 # Niri keeps a separate workspace index sequence on each output.
 case "$(hostname)" in
-  ai)
-    workspace_order=(
-      "4entertainment:1"
-      "2browser:2"
-      "5utility:3"
-      "3chat:1"
-      "1terminal:2"
-      "0other:3"
-    )
-    ;;
-  shoukei)
+  # ai)
+  #   workspace_order=(
+  #     "4entertainment:1"
+  #     "2browser:2"
+  #     "5utility:3"
+  #     "3chat:1"
+  #     "1terminal:2"
+  #     "0other:3"
+  #   )
+  #   ;;
+  ai|shoukei)
     workspace_order=(
       "1terminal:1"
       "2browser:2"
