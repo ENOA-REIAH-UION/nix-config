@@ -120,7 +120,11 @@ let
   # ---------------------------------------------------------------------------
 
   mkAndroidPlatform =
-    version: sha256:
+    {
+      version,
+      revision,
+      sha256,
+    }:
 
     pkgs.runCommand "android-platform-${version}"
       {
@@ -133,16 +137,30 @@ let
 
         unzip -q ${
           pkgs.fetchurl {
-            url = "https://dl.google.com/android/repository/platform-${version}_r02.zip";
+            url = "https://dl.google.com/android/repository/platform-${version}_${revision}.zip";
             inherit sha256;
           }
         } \
           -d $out
       '';
 
-  platform35 = mkAndroidPlatform "35" "sha256-CYjKytAbOKGKR7rBSgaV8ka8dsGwbA7rjrDcglqwyOA=";
+  platform35 = mkAndroidPlatform {
+    version = "35";
+    revision = "r02";
+    sha256 = "sha256-CYjKytAbOKGKR7rBSgaV8ka8dsGwbA7rjrDcglqwyOA=";
+  };
 
-  platform36 = mkAndroidPlatform "36" "sha256-N2BzaaKMW2QLOnmYho1FiY68t3dWWg6F+azzbyljHS4=";
+  platform36 = mkAndroidPlatform {
+    version = "36";
+    revision = "r02";
+    sha256 = "sha256-N2BzaaKMW2QLOnmYho1FiY68t3dWWg6F+azzbyljHS4=";
+  };
+
+  platform37_1 = mkAndroidPlatform {
+    version = "37.1";
+    revision = "r01";
+    sha256 = "sha256-yt8KVBhHgg6j2P/FwZJWKhg3bPm6UQv5ZZx3L5pEIYQ=";
+  };
 
   # ---------------------------------------------------------------------------
   # Assemble Android SDK
@@ -183,6 +201,10 @@ let
     cp -r \
       ${platform36}/* \
       $out/libexec/android-sdk/platforms/android-36/
+
+    cp -r \
+      ${platform37_1}/* \
+      $out/libexec/android-sdk/platforms/android-37/
   '';
 
   sdk = "${sdkWithNdk}/libexec/android-sdk";
@@ -203,6 +225,7 @@ in
     cmake3316
     platform35
     platform36
+    platform37_1
     sdkWithNdk
     ;
 
