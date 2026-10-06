@@ -25,6 +25,8 @@ let
   android = import ./android-toolchain.nix {
     inherit pkgs;
   };
+
+  androidSdkHome = "$HOME/android-sdk";
 in
 {
   environment.packages = with pkgs; [
@@ -33,26 +35,107 @@ in
   ];
 
   environment.sessionVariables = {
-    ANDROID_HOME = android.sdk;
-    ANDROID_SDK_ROOT = android.sdk;
-    ANDROID_NDK_ROOT = android.ndk;
+    ANDROID_HOME = androidSdkHome;
+    ANDROID_SDK_ROOT = androidSdkHome;
+
+    ANDROID_NDK_ROOT = "${androidSdkHome}/ndk/${android.ndkVersion}";
+
     JAVA_HOME = "${pkgs.jdk17}";
   };
 
+  build.activation.android-sdk = ''
+    set -eu
+
+    SDK="${androidSdkHome}"
+    STORE_SDK="${android.sdk}"
+
+    mkdir -p "$SDK"
+
+    # -------------------------------------------------------------------------
+    # Nix-managed SDK components
+    #
+    # Only create/replace symlinks.
+    # Never copy SDK contents into $HOME.
+    # -------------------------------------------------------------------------
+
+    link_sdk_component() {
+      name="$1"
+      target="$2"
+
+      if [ -e "$SDK/$name" ] || [ -L "$SDK/$name" ]; then
+        rm -rf "$SDK/$name"
+      fi
+
+      ln -s "$target" "$SDK/$name"
+    }
+
+    # Base SDK components
+    for component in \
+      platform-tools \
+      tools \
+      cmdline-tools
+    do
+      if [ -e "$STORE_SDK/$component" ] || [ -L "$STORE_SDK/$component" ]; then
+        link_sdk_component "$component" "$STORE_SDK/$component"
+      fi
+    done
+
+    # Build tools
+    if [ -d "$STORE_SDK/build-tools" ]; then
+      link_sdk_component \
+        build-tools \
+        "$STORE_SDK/build-tools"
+    fi
+
+    # NDK
+    if [ -d "$STORE_SDK/ndk" ]; then
+      link_sdk_component \
+        ndk \
+        "$STORE_SDK/ndk"
+    fi
+
+    # CMake
+    if [ -d "$STORE_SDK/cmake" ]; then
+      link_sdk_component \
+        cmake \
+        "$STORE_SDK/cmake"
+    fi
+
+    # Licenses
+    if [ -d "$STORE_SDK/licenses" ]; then
+      link_sdk_component \
+        licenses \
+        "$STORE_SDK/licenses"
+    fi
+
+    # -------------------------------------------------------------------------
+    # Marker
+    #
+    # Useful for debugging which Nix SDK is currently exposed.
+    # -------------------------------------------------------------------------
+
+    printf '%s\n' "$STORE_SDK" > "$SDK/.nix-sdk-store-path"
+  '';
+
   build.activation.android-gradle-config = ''
+        set -eu
+
         mkdir -p "$HOME/.gradle"
 
-        BUILD_TOOLS_DIR="${android.sdk}/build-tools"
+        SDK="${androidSdkHome}"
+        BUILD_TOOLS_DIR="$SDK/build-tools"
 
-        LATEST_BUILD_TOOLS="$(
-          ls -1 "$BUILD_TOOLS_DIR" |
-          sort -V |
-          tail -n1
-        )"
+        if [ -d "$BUILD_TOOLS_DIR" ]; then
+          LATEST_BUILD_TOOLS="$(
+            ls -1 "$BUILD_TOOLS_DIR" |
+            sort -V |
+            tail -n1
+          )"
 
-        cat > "$HOME/.gradle/gradle.properties" <<EOF
+          cat > "$HOME/.gradle/gradle.properties" <<EOF
     android.aapt2FromMavenOverride=$BUILD_TOOLS_DIR/$LATEST_BUILD_TOOLS/aapt2
     org.gradle.console=rich
     EOF
+        fi
   '';
 }

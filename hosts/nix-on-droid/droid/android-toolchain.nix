@@ -20,8 +20,8 @@ let
 
         tar -xf ${
           pkgs.fetchurl {
-            url = "https://github.com/HomuHomu833/android-sdk-custom/releases/download/36.0.2/android-sdk-aarch64-linux-musl.tar.xz";
-            sha256 = "sha256:5a4989c7d80f60104033eb1121b028ef1124876850796ba816cbed2f7bbe550c";
+            url = "https://github.com/HomuHomu833/android-sdk-custom/releases/download/37.0.0/android-sdk-aarch64-linux-musl.tar.xz";
+            sha256 = "sha256-HZxHW3D2bsIdwiWyU4ghSqpBUhAA7jWj/onYu37UZ6Y=";
           }
         } \
           --strip-components=1 \
@@ -116,53 +116,6 @@ let
   cmake3316 = mkAndroidCmake "3.31.6" "sha256-tMx4jWMRKydJtAYn5xnrXTuO2PAMNtdxifQBnP5kvJ4=";
 
   # ---------------------------------------------------------------------------
-  # Android Platforms
-  # ---------------------------------------------------------------------------
-
-  mkAndroidPlatform =
-    {
-      version,
-      revision,
-      sha256,
-    }:
-
-    pkgs.runCommand "android-platform-${version}"
-      {
-        nativeBuildInputs = [
-          pkgs.unzip
-        ];
-      }
-      ''
-        mkdir -p $out
-
-        unzip -q ${
-          pkgs.fetchurl {
-            url = "https://dl.google.com/android/repository/platform-${version}_${revision}.zip";
-            inherit sha256;
-          }
-        } \
-          -d $out
-      '';
-
-  platform35 = mkAndroidPlatform {
-    version = "35";
-    revision = "r02";
-    sha256 = "sha256-CYjKytAbOKGKR7rBSgaV8ka8dsGwbA7rjrDcglqwyOA=";
-  };
-
-  platform36 = mkAndroidPlatform {
-    version = "36";
-    revision = "r02";
-    sha256 = "sha256-N2BzaaKMW2QLOnmYho1FiY68t3dWWg6F+azzbyljHS4=";
-  };
-
-  platform370_02 = mkAndroidPlatform {
-    version = "37.0";
-    revision = "r02";
-    sha256 = "840b23e827f96e64aea4c89a1194aac3dc5f6bad37edb231c5c795d890330e8d";
-  };
-
-  # ---------------------------------------------------------------------------
   # Assemble Android SDK
   # ---------------------------------------------------------------------------
 
@@ -191,20 +144,6 @@ let
       ${cmake3316} \
       $out/libexec/android-sdk/cmake/3.31.6
 
-    # Android Platforms
-    mkdir -p $out/libexec/android-sdk/platforms
-
-    cp -r \
-      ${platform35}/* \
-      $out/libexec/android-sdk/platforms/android-35/
-
-    cp -r \
-      ${platform36}/* \
-      $out/libexec/android-sdk/platforms/android-36/
-
-    cp -r \
-      ${platform370_02}/* \
-      $out/libexec/android-sdk/platforms/android-37.0/
   '';
 
   sdk = "${sdkWithNdk}/libexec/android-sdk";
@@ -223,9 +162,6 @@ in
     androidNdk
     cmake3221
     cmake3316
-    platform35
-    platform36
-    platform370_02
     sdkWithNdk
     ;
 
