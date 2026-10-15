@@ -10,10 +10,7 @@
     settings = {
       # Get editor completions based on the config schema
       "$schema" = "https://starship.rs/config-schema.json";
-      character = {
-        success_symbol = "[➜](bold green)";
-        error_symbol = "[➜](bold red)";
-      };
+
       # I never rely on the defaults, so this module is useless to me—disabled.
       # I prefer adding --project, --region to very gcloud/aws command.
       aws.disabled = true;
@@ -23,12 +20,7 @@
         symbol = "⛵";
         disabled = false;
       };
-      os = {
-        disabled = false;
 
-        # Nix-on-Droid is detected as Linux; use ❄️ instead of 🐧.
-        # symbols.Linux = "❄️ ";
-      };
     };
   };
 }
