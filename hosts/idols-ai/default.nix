@@ -53,6 +53,7 @@ in
 
   networking.useNetworkd = true;
   systemd.network.enable = true;
+  systemd.network.wait-online.enable = false;
 
   systemd.network.networks."10-${iface}" = {
     matchConfig.Name = [ iface ];
