@@ -41,7 +41,9 @@
         emoji = [ "Noto Color Emoji" ];
       };
       antialias = true; # 抗锯齿
-      hinting.enable = false; # 禁止字体微调 - 高分辨率下没这必要
+      # 显示器为 1080p（普通 DPI），开启字体微调才能让小字号清晰；
+      # 只有高分屏才值得关掉它换取更平滑的笔画。
+      hinting.enable = true;
       subpixel = {
         rgba = "rgb"; # IPS 屏幕使用 rgb 排列
       };
